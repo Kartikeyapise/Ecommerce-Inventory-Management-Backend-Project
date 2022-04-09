@@ -2,6 +2,7 @@ package Database
 
 import (
 	"fmt"
+	"github.com/kartikeya/product_catalog_DIY/Model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -16,5 +17,5 @@ func ConnectDatabase() {
 		fmt.Println(err.Error())
 		panic("Cannot connect to DB")
 	}
-	//DB.AutoMigrate(&User{})
+	DB.AutoMigrate(&Model.Product{})
 }
