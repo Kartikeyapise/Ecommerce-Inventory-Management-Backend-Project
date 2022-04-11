@@ -7,6 +7,7 @@ import (
 	"github.com/kartikeya/product_catalog_DIY/Database"
 	"github.com/kartikeya/product_catalog_DIY/Model"
 	"net/http"
+	"strconv"
 )
 
 /*
@@ -42,8 +43,7 @@ func AddProducts(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("products added successfully")
 }
 
-func GetProduct(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("inproduct API")
+func GetProductById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
 	params := mux.Vars(r)
 	var product Model.Product
@@ -51,4 +51,31 @@ func GetProduct(w http.ResponseWriter, r *http.Request) {
 	Database.DB.First(&product, params["id"])
 	//fmt.Println(product)
 	json.NewEncoder(w).Encode(product)
+}
+
+func GetProducts(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "application/json")
+	var products []Model.Product
+	Database.DB.Find(&products)
+	json.NewEncoder(w).Encode(products)
+}
+
+func BuyProduct(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "application/json")
+	params := mux.Vars(r)
+	var product Model.Product
+	Database.DB.Find(&product, params["id"])
+	numberOfProductsAvailable, _ := strconv.Atoi(product.Quantity)
+	numberOfProductsRequired, _ := strconv.Atoi(params["quantity"])
+	if numberOfProductsAvailable < numberOfProductsRequired {
+		json.NewEncoder(w).Encode("Max Quantity available is " + strconv.Itoa(numberOfProductsAvailable))
+		return
+	}
+	UpdateProductQuantity(&product, numberOfProductsAvailable-numberOfProductsRequired)
+	json.NewEncoder(w).Encode("Buy Successful")
+}
+
+func UpdateProductQuantity(product *Model.Product, quantity int) {
+	product.Quantity = strconv.Itoa(quantity)
+	Database.DB.Save(&product)
 }
