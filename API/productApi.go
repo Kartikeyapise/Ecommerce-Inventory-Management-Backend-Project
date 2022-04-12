@@ -7,7 +7,9 @@ import (
 	"github.com/kartikeya/product_catalog_DIY/Database"
 	"github.com/kartikeya/product_catalog_DIY/Model"
 	"net/http"
+	"sort"
 	"strconv"
+	"time"
 )
 
 /*
@@ -78,4 +80,22 @@ func BuyProduct(w http.ResponseWriter, r *http.Request) {
 func UpdateProductQuantity(product *Model.Product, quantity int) {
 	product.Quantity = strconv.Itoa(quantity)
 	Database.DB.Save(&product)
+}
+
+func GetTop5Products(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "application/json")
+	var products []Model.Product
+	Database.DB.Find(&products)
+	sort.Slice(products, func(i, j int) bool {
+		return products[i].UpdatedAt.After(products[j].UpdatedAt)
+	})
+	i := 0
+	for _, p := range products {
+		if p.UpdatedAt.After(time.Now().Add(-1*time.Hour)) && i < 5 {
+			i++
+		} else {
+			break
+		}
+	}
+	json.NewEncoder(w).Encode(products[0:i])
 }

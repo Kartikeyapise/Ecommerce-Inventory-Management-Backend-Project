@@ -16,7 +16,7 @@ func intilizeRouter() {
 	r.HandleFunc("/product/{id}", API.GetProductById).Methods("GET")
 	r.HandleFunc("/products", API.GetProducts).Methods("GET")
 	r.HandleFunc("/buyProduct/{id}/{quantity}", API.BuyProduct).Methods("PUT")
-	//r.HandleFunc("/product/{id}", UpdateProduct).Methods("PUT")
+	r.HandleFunc("/getTop5Products", API.GetTop5Products).Methods("GET")
 
 	fmt.Println("Listening to requests.......")
 	log.Fatal(http.ListenAndServe(":9000", r))
