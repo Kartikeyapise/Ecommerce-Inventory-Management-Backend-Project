@@ -27,7 +27,7 @@ func intilizeRouter() {
 	r.HandleFunc("/buyProduct/{id}/{quantity}", func(writer http.ResponseWriter, request *http.Request) {
 		Controller.BuyProduct(writer, request, Database.DB)
 	}).Methods("PUT")
-	
+
 	r.HandleFunc("/getTop5Products", func(writer http.ResponseWriter, request *http.Request) {
 		Controller.GetTop5Products(writer, request, Database.DB)
 	}).Methods("GET")
@@ -39,6 +39,5 @@ func intilizeRouter() {
 
 func main() {
 	Database.ConnectDatabase()
-	fmt.Println("Database connected.......")
 	intilizeRouter()
 }
