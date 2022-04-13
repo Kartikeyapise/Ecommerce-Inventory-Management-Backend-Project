@@ -3,8 +3,8 @@ package Controller
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
-	"github.com/kartikeya/product_catalog_DIY/Database"
 	"github.com/kartikeya/product_catalog_DIY/Model"
+	"gorm.io/gorm"
 	"net/http"
 	"sort"
 	"strconv"
@@ -32,7 +32,7 @@ payload =>>>>>>.
 
 */
 
-func AddProducts(w http.ResponseWriter, r *http.Request) {
+func AddProducts(w http.ResponseWriter, r *http.Request, DB *gorm.DB) {
 	w.Header().Set("Content-type", "application/json")
 	var products []Model.Product
 	err := json.NewDecoder(r.Body).Decode(&products)
@@ -40,50 +40,50 @@ func AddProducts(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	Database.DB.Create(&products)
+	DB.Create(&products)
 	json.NewEncoder(w).Encode("products added successfully")
 }
 
-func GetProductById(w http.ResponseWriter, r *http.Request) {
+func GetProductById(w http.ResponseWriter, r *http.Request, DB *gorm.DB) {
 	w.Header().Set("Content-type", "application/json")
 	params := mux.Vars(r)
 	var product Model.Product
-	Database.DB.First(&product, params["id"])
+	DB.First(&product, params["id"])
 	//fmt.Println(product)
 	json.NewEncoder(w).Encode(product)
 }
 
-func GetProducts(w http.ResponseWriter, r *http.Request) {
+func GetProducts(w http.ResponseWriter, r *http.Request, DB *gorm.DB) {
 	w.Header().Set("Content-type", "application/json")
 	var products []Model.Product
-	Database.DB.Find(&products)
+	DB.Find(&products)
 	json.NewEncoder(w).Encode(products)
 }
 
-func BuyProduct(w http.ResponseWriter, r *http.Request) {
+func BuyProduct(w http.ResponseWriter, r *http.Request, DB *gorm.DB) {
 	w.Header().Set("Content-type", "application/json")
 	params := mux.Vars(r)
 	var product Model.Product
-	Database.DB.Find(&product, params["id"])
+	DB.Find(&product, params["id"])
 	numberOfProductsAvailable, _ := strconv.Atoi(product.Quantity)
 	numberOfProductsRequired, _ := strconv.Atoi(params["quantity"])
 	if numberOfProductsAvailable < numberOfProductsRequired {
 		json.NewEncoder(w).Encode("Max Quantity available is " + strconv.Itoa(numberOfProductsAvailable))
 		return
 	}
-	UpdateProductQuantity(&product, numberOfProductsAvailable-numberOfProductsRequired)
+	UpdateProductQuantity(&product, numberOfProductsAvailable-numberOfProductsRequired, DB)
 	json.NewEncoder(w).Encode("Buy Successful")
 }
 
-func UpdateProductQuantity(product *Model.Product, quantity int) {
+func UpdateProductQuantity(product *Model.Product, quantity int, DB *gorm.DB) {
 	product.Quantity = strconv.Itoa(quantity)
-	Database.DB.Save(&product)
+	DB.Save(&product)
 }
 
-func GetTop5Products(w http.ResponseWriter, r *http.Request) {
+func GetTop5Products(w http.ResponseWriter, r *http.Request, DB *gorm.DB) {
 	w.Header().Set("Content-type", "application/json")
 	var products []Model.Product
-	Database.DB.Find(&products)
+	DB.Find(&products)
 	sort.Slice(products, func(i, j int) bool {
 		return products[i].UpdatedAt.After(products[j].UpdatedAt)
 	})

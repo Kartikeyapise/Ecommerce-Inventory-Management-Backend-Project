@@ -12,11 +12,25 @@ import (
 func intilizeRouter() {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/products", Controller.AddProducts).Methods("POST")
-	r.HandleFunc("/product/{id}", Controller.GetProductById).Methods("GET")
-	r.HandleFunc("/products", Controller.GetProducts).Methods("GET")
-	r.HandleFunc("/buyProduct/{id}/{quantity}", Controller.BuyProduct).Methods("PUT")
-	r.HandleFunc("/getTop5Products", Controller.GetTop5Products).Methods("GET")
+	r.HandleFunc("/products", func(writer http.ResponseWriter, request *http.Request) {
+		Controller.AddProducts(writer, request, Database.DB)
+	}).Methods("POST")
+
+	r.HandleFunc("/product/{id}", func(writer http.ResponseWriter, request *http.Request) {
+		Controller.GetProductById(writer, request, Database.DB)
+	}).Methods("GET")
+
+	r.HandleFunc("/products", func(writer http.ResponseWriter, request *http.Request) {
+		Controller.GetProducts(writer, request, Database.DB)
+	}).Methods("GET")
+
+	r.HandleFunc("/buyProduct/{id}/{quantity}", func(writer http.ResponseWriter, request *http.Request) {
+		Controller.BuyProduct(writer, request, Database.DB)
+	}).Methods("PUT")
+	
+	r.HandleFunc("/getTop5Products", func(writer http.ResponseWriter, request *http.Request) {
+		Controller.GetTop5Products(writer, request, Database.DB)
+	}).Methods("GET")
 
 	fmt.Println("Listening to requests.......")
 	log.Fatal(http.ListenAndServe(":9000", r))
