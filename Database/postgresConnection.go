@@ -18,5 +18,5 @@ func ConnectDatabase() {
 		panic("Cannot connect to DB")
 	}
 	DB.AutoMigrate(&entity.Product{})
-	fmt.Println("Database connected.......")
+	fmt.Println("Postgres Database connected.......")
 }
