@@ -10,7 +10,7 @@ import (
 
 var (
 	httpRouter        router.Router                = router.NewMuxRouter()
-	productRepository repository.ProductRepository = repository.NewProductRepository()
+	productRepository repository.ProductRepository = repository.NewProductRepository(Database.ConnectPostgresDatabase())
 	productService    service.ProductService       = service.NewProductService(productRepository)
 	productController controller.ProductController = controller.NewProductController(productService)
 )
@@ -26,7 +26,6 @@ func defineApis() {
 }
 
 func main() {
-	Database.ConnectDatabase()
 	defineApis()
 	const port string = ":9000"
 	httpRouter.SERVE(port)

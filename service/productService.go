@@ -20,21 +20,20 @@ func NewProductService(repo repository.ProductRepository) ProductService {
 	return &service{}
 }
 
-func (s service) AddProducts(products []entity.Product) error {
-	_, err := productRepository.AddRecords(products)
-	return err
+func (s service) AddProducts(products []entity.Product) ([]entity.Product, error) {
+	return productRepository.Create(products)
 }
 
-func (s service) GetProductById(id string) (entity.Product, error) {
-	return productRepository.GetRecordById(id)
+func (s service) GetProductById(id string) (*entity.Product, error) {
+	return productRepository.FindById(id)
 }
 
 func (s service) GetProducts() ([]entity.Product, error) {
-	return productRepository.GetAllRecords()
+	return productRepository.FindAll()
 }
 
 func (s service) BuyProduct(id string, quantity string) (*entity.Product, error) {
-	product, err := productRepository.GetRecordById(id)
+	product, err := productRepository.FindById(id)
 	if err != nil {
 		return nil, err
 	}
@@ -45,11 +44,11 @@ func (s service) BuyProduct(id string, quantity string) (*entity.Product, error)
 		return nil, errors.New("Max Quantity exceeded")
 	}
 	product.Quantity = strconv.Itoa(numberOfProductsAvailable - numberOfProductsRequired)
-	return productRepository.UpdateRecord(product)
+	return productRepository.Update(product)
 }
 
 func (s service) GetTop5Products() ([]entity.Product, error) {
-	products, err := productRepository.GetAllRecords()
+	products, err := productRepository.FindAll()
 	if err != nil {
 		return nil, err
 	}

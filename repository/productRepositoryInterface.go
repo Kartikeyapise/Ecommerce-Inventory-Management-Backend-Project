@@ -3,8 +3,8 @@ package repository
 import "github.com/kartikeya/product_catalog_DIY/entity"
 
 type ProductRepository interface {
-	GetRecordById(id string) (entity.Product, error)
-	GetAllRecords() ([]entity.Product, error)
-	AddRecords([]entity.Product) ([]entity.Product, error)
-	UpdateRecord(product entity.Product) (*entity.Product, error)
+	FindById(id string) (*entity.Product, error)
+	FindAll() ([]entity.Product, error)
+	Create([]entity.Product) ([]entity.Product, error)
+	Update(product *entity.Product) (*entity.Product, error)
 }

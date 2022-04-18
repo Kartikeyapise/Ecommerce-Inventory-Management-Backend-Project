@@ -29,7 +29,7 @@ func (c controller) AddProducts(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(errors.ProductError{Message: "Error extracting products from request body"})
 		return
 	}
-	err = productService.AddProducts(products)
+	_, err = productService.AddProducts(products)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(errors.ProductError{Message: "Cannot add product. Something went wrong"})
