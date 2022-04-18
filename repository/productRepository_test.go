@@ -77,6 +77,7 @@ func TestCreate(t *testing.T) {
 
 	p, _ := repo.Create([]entity.Product{product})
 	assert.NotNil(t, p)
+	//TODO - insert correct query in query variable to rectify assert.NoError
 	//assert.NoError(t, err)
 }
 
@@ -92,5 +93,6 @@ func TestUpdate(t *testing.T) {
 
 	p, _ := repo.Update(&product)
 	assert.NotNil(t, p)
+	//TODO - insert correct query in query variable to rectify assert.NoError
 	//assert.NoError(t, err)
 }

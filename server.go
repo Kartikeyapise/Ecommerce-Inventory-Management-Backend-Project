@@ -6,11 +6,13 @@ import (
 	"github.com/kartikeya/product_catalog_DIY/repository"
 	"github.com/kartikeya/product_catalog_DIY/router"
 	"github.com/kartikeya/product_catalog_DIY/service"
+	"gorm.io/gorm"
 )
 
 var (
 	httpRouter        router.Router                = router.NewMuxRouter()
-	productRepository repository.ProductRepository = repository.NewProductRepository(Database.ConnectPostgresDatabase())
+	DB                *gorm.DB                     = Database.ConnectPostgresDatabase()
+	productRepository repository.ProductRepository = repository.NewProductRepository(DB)
 	productService    service.ProductService       = service.NewProductService(productRepository)
 	productController controller.ProductController = controller.NewProductController(productService)
 )

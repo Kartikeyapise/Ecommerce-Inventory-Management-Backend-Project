@@ -6,6 +6,7 @@ import (
 	"github.com/kartikeya/product_catalog_DIY/entity"
 	"github.com/kartikeya/product_catalog_DIY/errors"
 	"github.com/kartikeya/product_catalog_DIY/service"
+	"github.com/kartikeya/product_catalog_DIY/view"
 	"net/http"
 )
 
@@ -18,6 +19,18 @@ type controller struct{}
 func NewProductController(service service.ProductService) ProductController {
 	productService = service
 	return &controller{}
+}
+
+func (c controller) GetProductById(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "application/json")
+	params := mux.Vars(r)
+	product, err := productService.GetProductById(params["id"])
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(errors.ProductError{Message: err.Error()})
+		return
+	}
+	json.NewEncoder(w).Encode(product)
 }
 
 func (c controller) AddProducts(w http.ResponseWriter, r *http.Request) {
@@ -35,19 +48,7 @@ func (c controller) AddProducts(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(errors.ProductError{Message: "Cannot add product. Something went wrong"})
 		return
 	}
-	json.NewEncoder(w).Encode(`{ status : products added successfully}`)
-}
-
-func (c controller) GetProductById(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-type", "application/json")
-	params := mux.Vars(r)
-	product, err := productService.GetProductById(params["id"])
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(errors.ProductError{Message: err.Error()})
-		return
-	}
-	json.NewEncoder(w).Encode(product)
+	json.NewEncoder(w).Encode(view.ResponseMessage{"products added successfully"})
 }
 
 func (c controller) GetProducts(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +71,7 @@ func (c controller) BuyProduct(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(errors.ProductError{Message: err.Error()})
 		return
 	}
-	json.NewEncoder(w).Encode("{status : Buy Successful}")
+	json.NewEncoder(w).Encode(view.ResponseMessage{"Buy Successful"})
 }
 
 func (c controller) GetTop5Products(w http.ResponseWriter, r *http.Request) {
