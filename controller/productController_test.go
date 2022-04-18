@@ -38,6 +38,15 @@ func addSampleProduct() {
 	})
 }
 
+//func TestTimePass(t *testing.T) {
+//	var p entity.Product
+//	err := DB.Where("name = ?", "N").First(&p).Error
+//	if err != nil {
+//		log.Println("in if............", p)
+//	}
+//	log.Println("printing............", p)
+//}
+
 func getSampleProduct() *entity.Product {
 	return &entity.Product{
 		Model:       gorm.Model{ID: 1},
@@ -191,7 +200,7 @@ func TestAddProductsWhenReqBodyIsNotSuppliedInCorrectFormat(t *testing.T) {
 
 	//Assert HTTP response
 	assert.NotNil(t, message)
-	assert.Equal(t, "Cannot add product. Something went wrong", message.Message)
+	assert.Equal(t, "Error extracting products from request body", message.Message)
 
 }
 
