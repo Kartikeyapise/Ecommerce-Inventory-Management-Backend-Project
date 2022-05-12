@@ -1,6 +1,8 @@
 package service
 
-import "github.com/kartikeya/product_catalog_DIY/entity"
+import (
+	"github.com/kartikeya/product_catalog_DIY/src/main/entity"
+)
 
 type ProductService interface {
 	AddProducts(products []entity.Product) ([]entity.Product, error)

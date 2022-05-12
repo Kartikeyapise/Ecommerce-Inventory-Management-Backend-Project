@@ -1,7 +1,8 @@
 package service
 
 import (
-	"github.com/kartikeya/product_catalog_DIY/entity"
+	"github.com/kartikeya/product_catalog_DIY/src/main/entity"
+	"github.com/kartikeya/product_catalog_DIY/src/main/service"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
@@ -57,7 +58,7 @@ func TestGetProductById(t *testing.T) {
 
 	mockRepo.On("FindById").Return(product, nil).Once()
 
-	testService := NewProductService(mockRepo)
+	testService := service.NewProductService(mockRepo)
 
 	result, err := testService.GetProductById("1")
 	//Mock Assertion: Behavioural
@@ -87,7 +88,7 @@ func TestAddProducts(t *testing.T) {
 
 	mockRepo.On("Create").Return(products, nil).Once()
 
-	testService := NewProductService(mockRepo)
+	testService := service.NewProductService(mockRepo)
 
 	result, err := testService.AddProducts(products)
 
@@ -118,7 +119,7 @@ func TestBuyProductWhenQuantityNotAvailable(t *testing.T) {
 	mockRepo.On("FindById").Return(product, nil).Once()
 	//mockRepo.On("Update").Return(product, nil).Once()
 
-	testService := NewProductService(mockRepo)
+	testService := service.NewProductService(mockRepo)
 
 	result, err := testService.BuyProduct("1", "1000")
 
@@ -145,7 +146,7 @@ func TestBuyProduct(t *testing.T) {
 	mockRepo.On("FindById").Return(product, nil).Once()
 	mockRepo.On("Update").Return(product, nil).Once()
 
-	testService := NewProductService(mockRepo)
+	testService := service.NewProductService(mockRepo)
 
 	result, err := testService.BuyProduct("1", "10")
 
@@ -177,7 +178,7 @@ func TestGetTop5Products(t *testing.T) {
 
 	mockRepo.On("FindAll").Return(products, nil).Once()
 
-	testService := NewProductService(mockRepo)
+	testService := service.NewProductService(mockRepo)
 
 	result, err := testService.GetTop5Products()
 

@@ -1,6 +1,8 @@
 package repository
 
-import "github.com/kartikeya/product_catalog_DIY/entity"
+import (
+	"github.com/kartikeya/product_catalog_DIY/src/main/entity"
+)
 
 type ProductRepository interface {
 	FindById(id string) (*entity.Product, error)

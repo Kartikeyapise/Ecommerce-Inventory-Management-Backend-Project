@@ -3,10 +3,10 @@ package controller
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
-	"github.com/kartikeya/product_catalog_DIY/entity"
-	"github.com/kartikeya/product_catalog_DIY/errors"
-	"github.com/kartikeya/product_catalog_DIY/service"
-	"github.com/kartikeya/product_catalog_DIY/view"
+	"github.com/kartikeya/product_catalog_DIY/src/main/entity"
+	"github.com/kartikeya/product_catalog_DIY/src/main/errors"
+	"github.com/kartikeya/product_catalog_DIY/src/main/service"
+	"github.com/kartikeya/product_catalog_DIY/src/main/view"
 	"net/http"
 )
 

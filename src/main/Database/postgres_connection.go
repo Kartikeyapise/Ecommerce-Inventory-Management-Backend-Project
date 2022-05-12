@@ -2,7 +2,7 @@ package Database
 
 import (
 	"fmt"
-	"github.com/kartikeya/product_catalog_DIY/entity"
+	"github.com/kartikeya/product_catalog_DIY/src/main/entity"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

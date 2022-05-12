@@ -2,8 +2,8 @@ package service
 
 import (
 	"errors"
-	"github.com/kartikeya/product_catalog_DIY/entity"
-	"github.com/kartikeya/product_catalog_DIY/repository"
+	"github.com/kartikeya/product_catalog_DIY/src/main/entity"
+	"github.com/kartikeya/product_catalog_DIY/src/main/repository"
 	"sort"
 	"strconv"
 	"time"

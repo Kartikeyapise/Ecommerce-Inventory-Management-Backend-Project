@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/gorilla/mux"
-	"github.com/kartikeya/product_catalog_DIY/Database"
-	"github.com/kartikeya/product_catalog_DIY/entity"
-	"github.com/kartikeya/product_catalog_DIY/repository"
-	"github.com/kartikeya/product_catalog_DIY/service"
-	"github.com/kartikeya/product_catalog_DIY/view"
+	"github.com/kartikeya/product_catalog_DIY/src/main/Database"
+	"github.com/kartikeya/product_catalog_DIY/src/main/controller"
+	"github.com/kartikeya/product_catalog_DIY/src/main/entity"
+	repository2 "github.com/kartikeya/product_catalog_DIY/src/main/repository"
+	service2 "github.com/kartikeya/product_catalog_DIY/src/main/service"
+	"github.com/kartikeya/product_catalog_DIY/src/main/view"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 	"net/http"
@@ -17,10 +18,10 @@ import (
 )
 
 var (
-	DB                    *gorm.DB                     = Database.ConnectTestDatabase()
-	productRepositoryTest repository.ProductRepository = repository.NewProductRepository(DB)
-	productServiceTest    service.ProductService       = service.NewProductService(productRepositoryTest)
-	productControllerTest ProductController            = NewProductController(productServiceTest)
+	DB                    *gorm.DB                      = Database.ConnectTestDatabase()
+	productRepositoryTest repository2.ProductRepository = repository2.NewProductRepository(DB)
+	productServiceTest    service2.ProductService       = service2.NewProductService(productRepositoryTest)
+	productControllerTest controller.ProductController  = controller.NewProductController(productServiceTest)
 )
 
 func cleanDatabase() {

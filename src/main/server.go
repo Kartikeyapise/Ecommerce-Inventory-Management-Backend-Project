@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/kartikeya/product_catalog_DIY/Database"
-	"github.com/kartikeya/product_catalog_DIY/controller"
-	"github.com/kartikeya/product_catalog_DIY/repository"
-	"github.com/kartikeya/product_catalog_DIY/router"
-	"github.com/kartikeya/product_catalog_DIY/service"
+	"github.com/kartikeya/product_catalog_DIY/src/main/Database"
+	controller "github.com/kartikeya/product_catalog_DIY/src/main/controller"
+	repository "github.com/kartikeya/product_catalog_DIY/src/main/repository"
+	router "github.com/kartikeya/product_catalog_DIY/src/main/router"
+	service "github.com/kartikeya/product_catalog_DIY/src/main/service"
 	"gorm.io/gorm"
 )
 
@@ -18,13 +18,11 @@ var (
 )
 
 func defineApis() {
-
 	httpRouter.POST("/products", productController.AddProducts)
 	httpRouter.GET("/product/{id}", productController.GetProductById)
 	httpRouter.GET("/products", productController.GetProducts)
 	httpRouter.PUT("/buyProduct/{id}/{quantity}", productController.BuyProduct)
 	httpRouter.GET("/getTop5Products", productController.GetTop5Products)
-
 }
 
 func main() {
