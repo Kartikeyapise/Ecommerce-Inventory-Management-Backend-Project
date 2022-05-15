@@ -3,13 +3,13 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
-	"github.com/kartikeya/product_catalog_DIY/src/main/Database"
 	"github.com/kartikeya/product_catalog_DIY/src/main/controller"
 	"github.com/kartikeya/product_catalog_DIY/src/main/entity"
-	repository2 "github.com/kartikeya/product_catalog_DIY/src/main/repository"
-	service2 "github.com/kartikeya/product_catalog_DIY/src/main/service"
 	"github.com/kartikeya/product_catalog_DIY/src/main/view"
+	"github.com/kartikeya/product_catalog_DIY/src/test/mocks"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 	"net/http"
@@ -17,87 +17,58 @@ import (
 	"testing"
 )
 
-var (
-	DB                    *gorm.DB                      = Database.ConnectTestDatabase()
-	productRepositoryTest repository2.ProductRepository = repository2.NewProductRepository(DB)
-	productServiceTest    service2.ProductService       = service2.NewProductService(productRepositoryTest)
-	productControllerTest controller.ProductController  = controller.NewProductController(productServiceTest)
-)
-
-func cleanDatabase() {
-	DB.Exec("DELETE FROM products")
-	//DB.Where("id IS NOT NULL").Delete(&entity.Product{})
-}
-
-func addSampleProduct() {
-	DB.Create(&entity.Product{
-		Model:       gorm.Model{ID: 1},
-		Name:        "N",
-		Description: "D",
-		Price:       "P",
-		Quantity:    "1",
-	})
-}
-
-//func TestTimePass(t *testing.T) {
-//	var p entity.Product
-//	err := DB.Where("name = ?", "N").First(&p).Error
-//	if err != nil {
-//		log.Println("in if............", p)
-//	}
-//	log.Println("printing............", p)
-//}
-
-func getSampleProduct() *entity.Product {
-	return &entity.Product{
-		Model:       gorm.Model{ID: 1},
-		Name:        "N",
-		Description: "D",
-		Price:       "P",
-		Quantity:    "1",
-	}
-}
-
 func TestGetProductById(t *testing.T) {
-	cleanDatabase()
-	addSampleProduct()
 
-	//Create a new HTTP GET request
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductService := mocks.NewMockProductService(mockCtrl)
+	productController := controller.Controller{
+		ProductService: mockProductService,
+	}
+
+	expectedProduct := &entity.Product{
+		Model:       gorm.Model{ID: 1},
+		Name:        "N",
+		Description: "D",
+		Price:       "P",
+		Quantity:    "Q",
+	}
+
+	mockProductService.EXPECT().GetProductById("1").Return(expectedProduct, nil).Times(1)
+
 	req, _ := http.NewRequest("GET", "/product/id", nil)
 	vars := map[string]string{
 		"id": "1",
 	}
 	req = mux.SetURLVars(req, vars)
-	//Assign Http handles function (Add post function)
-	handler := http.HandlerFunc(productControllerTest.GetProductById)
-
-	//Record Http response (httptest)
+	handler := http.HandlerFunc(productController.GetProductById)
 	response := httptest.NewRecorder()
-
-	//dispatch the HTTP request
 	handler.ServeHTTP(response, req)
 
-	//Add Assertion on the HTTP Status code and the response
 	status := response.Code
 	assert.Equal(t, status, http.StatusOK)
 
-	//Decode the HTTP response
 	var product entity.Product
 	json.NewDecoder(response.Body).Decode(&product)
 
-	//Assert HTTP response
 	assert.NotNil(t, product)
-	assert.Equal(t, uint(0x1), product.ID)
-	assert.Equal(t, "N", product.Name)
-	assert.Equal(t, "D", product.Description)
-	assert.Equal(t, "P", product.Price)
-	assert.Equal(t, "1", product.Quantity)
+	assert.Equal(t, expectedProduct.ID, product.ID)
+	assert.Equal(t, expectedProduct.Name, product.Name)
+	assert.Equal(t, expectedProduct.Description, product.Description)
+	assert.Equal(t, expectedProduct.Price, product.Price)
+	assert.Equal(t, expectedProduct.Quantity, product.Quantity)
 }
 
 func TestGetProductByIdWhenIdNotAvailable(t *testing.T) {
-	cleanDatabase()
-	addSampleProduct()
 
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductService := mocks.NewMockProductService(mockCtrl)
+	productController := controller.Controller{
+		ProductService: mockProductService,
+	}
+
+	mockProductService.EXPECT().GetProductById("2").Return(nil, errors.New("record not found")).Times(1)
 	//Create a new HTTP GET request
 	req, _ := http.NewRequest("GET", "/product/id", nil)
 	vars := map[string]string{
@@ -105,7 +76,7 @@ func TestGetProductByIdWhenIdNotAvailable(t *testing.T) {
 	}
 	req = mux.SetURLVars(req, vars)
 	//Assign Http handles function (Add post function)
-	handler := http.HandlerFunc(productControllerTest.GetProductById)
+	handler := http.HandlerFunc(productController.GetProductById)
 
 	//Record Http response (httptest)
 	response := httptest.NewRecorder()
@@ -127,9 +98,21 @@ func TestGetProductByIdWhenIdNotAvailable(t *testing.T) {
 }
 
 func TestAddProducts(t *testing.T) {
-	cleanDatabase()
-	//addSampleProduct()
-
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductService := mocks.NewMockProductService(mockCtrl)
+	productController := controller.Controller{
+		ProductService: mockProductService,
+	}
+	products := []entity.Product{entity.Product{
+		Model:       gorm.Model{ID: 1},
+		Name:        "N",
+		Description: "D",
+		Price:       "P",
+		Quantity:    "Q",
+	},
+	}
+	mockProductService.EXPECT().AddProducts(gomock.Any()).Return(products, nil).Times(1)
 	//create request body
 	req_body := []byte(`[
 		{
@@ -150,7 +133,7 @@ func TestAddProducts(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/products", bytes.NewBuffer(req_body))
 
 	//Assign Http handles function (Add post function)
-	handler := http.HandlerFunc(productControllerTest.AddProducts)
+	handler := http.HandlerFunc(productController.AddProducts)
 
 	//Record Http response (httptest)
 	response := httptest.NewRecorder()
@@ -173,9 +156,12 @@ func TestAddProducts(t *testing.T) {
 }
 
 func TestAddProductsWhenReqBodyIsNotSuppliedInCorrectFormat(t *testing.T) {
-	cleanDatabase()
-	addSampleProduct()
-
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductService := mocks.NewMockProductService(mockCtrl)
+	productController := controller.Controller{
+		ProductService: mockProductService,
+	}
 	//create request body
 	req_body := []byte(`garbage`)
 
@@ -183,7 +169,7 @@ func TestAddProductsWhenReqBodyIsNotSuppliedInCorrectFormat(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/products", bytes.NewBuffer(req_body))
 
 	//Assign Http handles function (Add post function)
-	handler := http.HandlerFunc(productControllerTest.AddProducts)
+	handler := http.HandlerFunc(productController.AddProducts)
 
 	//Record Http response (httptest)
 	response := httptest.NewRecorder()
@@ -206,12 +192,16 @@ func TestAddProductsWhenReqBodyIsNotSuppliedInCorrectFormat(t *testing.T) {
 }
 
 func TestAddProductsWhenServiceReturnsAnError(t *testing.T) {
-	cleanDatabase()
-	addSampleProduct()
-	//addSampleProduct()
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductService := mocks.NewMockProductService(mockCtrl)
+	productController := controller.Controller{
+		ProductService: mockProductService,
+	}
 
+	mockProductService.EXPECT().AddProducts(gomock.Any()).Return(nil, errors.New("error")).Times(1)
 	//create request body
-	req_body := []byte(`[
+	reqBody := []byte(`[
 		{	"id":1,
 			"name":"n1",
 			"description":"d1",
@@ -221,10 +211,10 @@ func TestAddProductsWhenServiceReturnsAnError(t *testing.T) {
 	]`)
 
 	//Create a new HTTP POST request
-	req, _ := http.NewRequest("POST", "/products", bytes.NewBuffer(req_body))
+	req, _ := http.NewRequest("POST", "/products", bytes.NewBuffer(reqBody))
 
 	//Assign Http handles function (Add post function)
-	handler := http.HandlerFunc(productControllerTest.AddProducts)
+	handler := http.HandlerFunc(productController.AddProducts)
 
 	//Record Http response (httptest)
 	response := httptest.NewRecorder()
@@ -247,14 +237,27 @@ func TestAddProductsWhenServiceReturnsAnError(t *testing.T) {
 }
 
 func TestGetProducts(t *testing.T) {
-	cleanDatabase()
-	addSampleProduct()
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductService := mocks.NewMockProductService(mockCtrl)
+	productController := controller.Controller{
+		ProductService: mockProductService,
+	}
+	expectedProducts := []entity.Product{entity.Product{
+		Model:       gorm.Model{ID: 1},
+		Name:        "N",
+		Description: "D",
+		Price:       "P",
+		Quantity:    "Q",
+	},
+	}
+	mockProductService.EXPECT().GetProducts().Return(expectedProducts, nil).Times(1)
 
 	//Create a new HTTP GET request
 	req, _ := http.NewRequest("GET", "/products", nil)
 
 	//Assign Http handles function (Add post function)
-	handler := http.HandlerFunc(productControllerTest.GetProducts)
+	handler := http.HandlerFunc(productController.GetProducts)
 
 	//Record Http response (httptest)
 	response := httptest.NewRecorder()
@@ -272,16 +275,65 @@ func TestGetProducts(t *testing.T) {
 
 	//Assert HTTP response
 	assert.NotNil(t, products[0])
-	assert.Equal(t, uint(0x1), products[0].ID)
-	assert.Equal(t, "N", products[0].Name)
-	assert.Equal(t, "D", products[0].Description)
-	assert.Equal(t, "P", products[0].Price)
-	assert.Equal(t, "1", products[0].Quantity)
+	assert.Equal(t, expectedProducts[0].ID, products[0].ID)
+	assert.Equal(t, expectedProducts[0].Name, products[0].Name)
+	assert.Equal(t, expectedProducts[0].Description, products[0].Description)
+	assert.Equal(t, expectedProducts[0].Price, products[0].Price)
+	assert.Equal(t, expectedProducts[0].Quantity, products[0].Quantity)
+}
+
+func TestGetProductsWhenServiceReturnsAnError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductService := mocks.NewMockProductService(mockCtrl)
+	productController := controller.Controller{
+		ProductService: mockProductService,
+	}
+
+	mockProductService.EXPECT().GetProducts().Return(nil, errors.New("error")).Times(1)
+
+	//Create a new HTTP GET request
+	req, _ := http.NewRequest("GET", "/products", nil)
+
+	//Assign Http handles function (Add post function)
+	handler := http.HandlerFunc(productController.GetProducts)
+
+	//Record Http response (httptest)
+	response := httptest.NewRecorder()
+
+	//dispatch the HTTP request
+	handler.ServeHTTP(response, req)
+
+	//Add Assertion on the HTTP Status code and the response
+	status := response.Code
+	assert.Equal(t, status, http.StatusInternalServerError)
+
+	//Decode the HTTP response
+	var message view.ResponseMessage
+	json.NewDecoder(response.Body).Decode(&message)
+
+	//Assert HTTP response
+	assert.Equal(t, "Cannot get Products.Something Went Wrong", message.Message)
+
 }
 
 func TestBuyProduct(t *testing.T) {
-	cleanDatabase()
-	addSampleProduct()
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductService := mocks.NewMockProductService(mockCtrl)
+	productController := controller.Controller{
+		ProductService: mockProductService,
+	}
+
+	expectedProduct := &entity.Product{
+		Model:       gorm.Model{ID: 1},
+		Name:        "N",
+		Description: "D",
+		Price:       "P",
+		Quantity:    "Q",
+	}
+
+	mockProductService.EXPECT().BuyProduct("1", "1").Return(expectedProduct, nil).Times(1)
 
 	//Create a new HTTP GET request
 	req, _ := http.NewRequest("PUT", "/buyProduct/1/1", nil)
@@ -291,7 +343,7 @@ func TestBuyProduct(t *testing.T) {
 	}
 	req = mux.SetURLVars(req, vars)
 	//Assign Http handles function (Add post function)
-	handler := http.HandlerFunc(productControllerTest.BuyProduct)
+	handler := http.HandlerFunc(productController.BuyProduct)
 
 	//Record Http response (httptest)
 	response := httptest.NewRecorder()
@@ -313,8 +365,14 @@ func TestBuyProduct(t *testing.T) {
 }
 
 func TestBuyProductWhenQuantityNotEnough(t *testing.T) {
-	cleanDatabase()
-	addSampleProduct()
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductService := mocks.NewMockProductService(mockCtrl)
+	productController := controller.Controller{
+		ProductService: mockProductService,
+	}
+
+	mockProductService.EXPECT().BuyProduct("1", "10").Return(nil, errors.New("Max Quantity exceeded")).Times(1)
 
 	//Create a new HTTP PUT request
 	req, _ := http.NewRequest("PUT", "/buyProduct/1/20", nil)
@@ -324,7 +382,7 @@ func TestBuyProductWhenQuantityNotEnough(t *testing.T) {
 	}
 	req = mux.SetURLVars(req, vars)
 	//Assign Http handles function (Add post function)
-	handler := http.HandlerFunc(productControllerTest.BuyProduct)
+	handler := http.HandlerFunc(productController.BuyProduct)
 
 	//Record Http response (httptest)
 	response := httptest.NewRecorder()
@@ -346,18 +404,24 @@ func TestBuyProductWhenQuantityNotEnough(t *testing.T) {
 }
 
 func TestBuyProductWhenCalledWithWrongId(t *testing.T) {
-	cleanDatabase()
-	addSampleProduct()
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductService := mocks.NewMockProductService(mockCtrl)
+	productController := controller.Controller{
+		ProductService: mockProductService,
+	}
+
+	mockProductService.EXPECT().BuyProduct("1", "10").Return(nil, errors.New("record not found")).Times(1)
 
 	//Create a new HTTP PUT request
 	req, _ := http.NewRequest("PUT", "/buyProduct/10/1", nil)
 	vars := map[string]string{
-		"id":       "10",
-		"quantity": "1",
+		"id":       "1",
+		"quantity": "10",
 	}
 	req = mux.SetURLVars(req, vars)
 	//Assign Http handles function (Add post function)
-	handler := http.HandlerFunc(productControllerTest.BuyProduct)
+	handler := http.HandlerFunc(productController.BuyProduct)
 
 	//Record Http response (httptest)
 	response := httptest.NewRecorder()
@@ -379,14 +443,28 @@ func TestBuyProductWhenCalledWithWrongId(t *testing.T) {
 }
 
 func TestGetTop5Products(t *testing.T) {
-	cleanDatabase()
-	addSampleProduct()
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductService := mocks.NewMockProductService(mockCtrl)
+	productController := controller.Controller{
+		ProductService: mockProductService,
+	}
+
+	expectedProducts := []entity.Product{entity.Product{
+		Model:       gorm.Model{ID: 1},
+		Name:        "N",
+		Description: "D",
+		Price:       "P",
+		Quantity:    "Q",
+	},
+	}
+	mockProductService.EXPECT().GetTop5Products().Return(expectedProducts, nil).Times(1)
 
 	//Create a new HTTP GET request
 	req, _ := http.NewRequest("GET", "/products", nil)
 
 	//Assign Http handles function (Add post function)
-	handler := http.HandlerFunc(productControllerTest.GetTop5Products)
+	handler := http.HandlerFunc(productController.GetTop5Products)
 
 	//Record Http response (httptest)
 	response := httptest.NewRecorder()
@@ -403,10 +481,10 @@ func TestGetTop5Products(t *testing.T) {
 	json.NewDecoder(response.Body).Decode(&products)
 
 	//Assert HTTP response
-	assert.NotNil(t, products[0])
-	assert.Equal(t, uint(0x1), products[0].ID)
-	assert.Equal(t, "N", products[0].Name)
-	assert.Equal(t, "D", products[0].Description)
-	assert.Equal(t, "P", products[0].Price)
-	assert.Equal(t, "1", products[0].Quantity)
+	assert.NotNil(t, products)
+	assert.Equal(t, expectedProducts[0].ID, products[0].ID)
+	assert.Equal(t, expectedProducts[0].Name, products[0].Name)
+	assert.Equal(t, expectedProducts[0].Description, products[0].Description)
+	assert.Equal(t, expectedProducts[0].Price, products[0].Price)
+	assert.Equal(t, expectedProducts[0].Quantity, products[0].Quantity)
 }

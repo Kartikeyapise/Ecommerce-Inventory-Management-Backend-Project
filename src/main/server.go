@@ -2,19 +2,19 @@ package main
 
 import (
 	"github.com/kartikeya/product_catalog_DIY/src/main/Database"
-	controller "github.com/kartikeya/product_catalog_DIY/src/main/controller"
-	repository "github.com/kartikeya/product_catalog_DIY/src/main/repository"
-	router "github.com/kartikeya/product_catalog_DIY/src/main/router"
-	service "github.com/kartikeya/product_catalog_DIY/src/main/service"
+	"github.com/kartikeya/product_catalog_DIY/src/main/controller"
+	"github.com/kartikeya/product_catalog_DIY/src/main/repository"
+	"github.com/kartikeya/product_catalog_DIY/src/main/router"
+	"github.com/kartikeya/product_catalog_DIY/src/main/service"
 	"gorm.io/gorm"
 )
 
 var (
-	httpRouter        router.Router                = router.NewMuxRouter()
-	DB                *gorm.DB                     = Database.ConnectPostgresDatabase()
-	productRepository repository.ProductRepository = repository.NewProductRepository(DB)
-	productService    service.ProductService       = service.NewProductService(productRepository)
-	productController controller.ProductController = controller.NewProductController(productService)
+	httpRouter        router.Router                         = router.NewMuxRouter()
+	DB                *gorm.DB                              = Database.ConnectPostgresDatabase()
+	productRepository repository.ProductRepositoryInterface = &repository.Repository{DB: DB}
+	productService    service.ProductServiceInterface       = &service.Service{ProductRepository: productRepository}
+	productController controller.ProductControllerInterface = &controller.Controller{ProductService: productService}
 )
 
 func defineApis() {

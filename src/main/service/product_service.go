@@ -9,31 +9,24 @@ import (
 	"time"
 )
 
-type service struct{}
-
-var (
-	productRepository repository.ProductRepository
-)
-
-func NewProductService(repo repository.ProductRepository) ProductService {
-	productRepository = repo
-	return &service{}
+type Service struct {
+	ProductRepository repository.ProductRepositoryInterface
 }
 
-func (s service) AddProducts(products []entity.Product) ([]entity.Product, error) {
-	return productRepository.Create(products)
+func (s Service) AddProducts(products []entity.Product) ([]entity.Product, error) {
+	return s.ProductRepository.Create(products)
 }
 
-func (s service) GetProductById(id string) (*entity.Product, error) {
-	return productRepository.FindById(id)
+func (s Service) GetProductById(id string) (*entity.Product, error) {
+	return s.ProductRepository.FindById(id)
 }
 
-func (s service) GetProducts() ([]entity.Product, error) {
-	return productRepository.FindAll()
+func (s Service) GetProducts() ([]entity.Product, error) {
+	return s.ProductRepository.FindAll()
 }
 
-func (s service) BuyProduct(id string, quantity string) (*entity.Product, error) {
-	product, err := productRepository.FindById(id)
+func (s Service) BuyProduct(id string, quantity string) (*entity.Product, error) {
+	product, err := s.ProductRepository.FindById(id)
 	if err != nil {
 		return nil, err
 	}
@@ -44,11 +37,11 @@ func (s service) BuyProduct(id string, quantity string) (*entity.Product, error)
 		return nil, errors.New("Max Quantity exceeded")
 	}
 	product.Quantity = strconv.Itoa(numberOfProductsAvailable - numberOfProductsRequired)
-	return productRepository.Update(product)
+	return s.ProductRepository.Update(product)
 }
 
-func (s service) GetTop5Products() ([]entity.Product, error) {
-	products, err := productRepository.FindAll()
+func (s Service) GetTop5Products() ([]entity.Product, error) {
+	products, err := s.ProductRepository.FindAll()
 	if err != nil {
 		return nil, err
 	}

@@ -1,54 +1,28 @@
 package service
 
 import (
+	"errors"
+	"github.com/golang/mock/gomock"
 	"github.com/kartikeya/product_catalog_DIY/src/main/entity"
 	"github.com/kartikeya/product_catalog_DIY/src/main/service"
+	"github.com/kartikeya/product_catalog_DIY/src/test/mocks"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
 	"testing"
 	"time"
 )
 
-type MockRepository struct {
-	mock.Mock
-}
-
-func (mock *MockRepository) FindById(id string) (*entity.Product, error) {
-	args := mock.Called()
-	result := args.Get(0)
-	return result.(*entity.Product), args.Error(1)
-}
-
-func (mock *MockRepository) FindAll() ([]entity.Product, error) {
-	args := mock.Called()
-	result := args.Get(0)
-	return result.([]entity.Product), args.Error(1)
-}
-
-func (mock *MockRepository) Create(products []entity.Product) ([]entity.Product, error) {
-	args := mock.Called()
-	result := args.Get(0)
-	return result.([]entity.Product), args.Error(1)
-}
-
-func (mock *MockRepository) Update(product *entity.Product) (*entity.Product, error) {
-	args := mock.Called()
-	result := args.Get(0)
-	return result.(*entity.Product), args.Error(1)
-}
-
-func (mock *MockRepository) GetProductById(id string) (*entity.Product, error) {
-	args := mock.Called()
-	result := args.Get(0)
-	return result.(*entity.Product), args.Error(1)
-}
-
 func TestGetProductById(t *testing.T) {
-	mockRepo := new(MockRepository)
+	//mockRepo := new(mocks.MockRepository)
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
+	productService := service.Service{
+		ProductRepository: mockProductRepository,
+	}
 
 	//setup expectations
-	product := &entity.Product{
+	expectedProduct := &entity.Product{
 		Model:       gorm.Model{ID: 1},
 		Name:        "N",
 		Description: "D",
@@ -56,28 +30,48 @@ func TestGetProductById(t *testing.T) {
 		Quantity:    "Q",
 	}
 
-	mockRepo.On("FindById").Return(product, nil).Once()
+	mockProductRepository.EXPECT().FindById("1").Return(expectedProduct, nil).Times(1)
 
-	testService := service.NewProductService(mockRepo)
-
-	result, err := testService.GetProductById("1")
-	//Mock Assertion: Behavioural
-	mockRepo.AssertExpectations(t)
+	product, err := productService.GetProductById("1")
 
 	//data Assertion
-	assert.Equal(t, uint(1), result.ID)
-	assert.Equal(t, "N", result.Name)
-	assert.Equal(t, "D", result.Description)
-	assert.Equal(t, "P", result.Price)
-	assert.Equal(t, "Q", result.Quantity)
 	assert.Nil(t, err)
+	assert.Equal(t, uint(1), product.ID)
+	assert.Equal(t, expectedProduct.Name, product.Name)
+	assert.Equal(t, expectedProduct.Description, product.Description)
+	assert.Equal(t, expectedProduct.Price, product.Price)
+	assert.Equal(t, expectedProduct.Quantity, product.Quantity)
+
+}
+
+func TestGetProductByIdWhenIdNotFound(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
+	productService := service.Service{
+		ProductRepository: mockProductRepository,
+	}
+
+	mockProductRepository.EXPECT().FindById("1").Return(nil, errors.New("error")).Times(1)
+
+	product, err := productService.GetProductById("1")
+
+	//data Assertion
+	assert.Nil(t, product)
+	assert.NotNil(t, err)
+
 }
 
 func TestAddProducts(t *testing.T) {
-	mockRepo := new(MockRepository)
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
+	productService := service.Service{
+		ProductRepository: mockProductRepository,
+	}
 
 	//setup expectations
-	products := []entity.Product{entity.Product{
+	expectedProducts := []entity.Product{entity.Product{
 		Model:       gorm.Model{ID: 1},
 		Name:        "N",
 		Description: "D",
@@ -86,29 +80,29 @@ func TestAddProducts(t *testing.T) {
 	},
 	}
 
-	mockRepo.On("Create").Return(products, nil).Once()
+	mockProductRepository.EXPECT().Create(gomock.Any()).Return(expectedProducts, nil).Times(1)
 
-	testService := service.NewProductService(mockRepo)
-
-	result, err := testService.AddProducts(products)
-
-	//Mock Assertion: Behavioural
-	mockRepo.AssertExpectations(t)
+	products, err := productService.AddProducts(expectedProducts)
 
 	//data Assertion
-	assert.Equal(t, uint(1), result[0].ID)
-	assert.Equal(t, "N", result[0].Name)
-	assert.Equal(t, "D", result[0].Description)
-	assert.Equal(t, "P", result[0].Price)
-	assert.Equal(t, "Q", result[0].Quantity)
 	assert.Nil(t, err)
+	assert.Equal(t, expectedProducts[0].ID, products[0].ID)
+	assert.Equal(t, expectedProducts[0].Name, products[0].Name)
+	assert.Equal(t, expectedProducts[0].Description, products[0].Description)
+	assert.Equal(t, expectedProducts[0].Price, products[0].Price)
+	assert.Equal(t, expectedProducts[0].Quantity, products[0].Quantity)
 }
 
 func TestBuyProductWhenQuantityNotAvailable(t *testing.T) {
-	mockRepo := new(MockRepository)
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
+	productService := service.Service{
+		ProductRepository: mockProductRepository,
+	}
 
 	//setup expectations
-	product := &entity.Product{
+	expectedProduct := &entity.Product{
 		Model:       gorm.Model{ID: 1},
 		Name:        "N",
 		Description: "D",
@@ -116,26 +110,44 @@ func TestBuyProductWhenQuantityNotAvailable(t *testing.T) {
 		Quantity:    "100",
 	}
 
-	mockRepo.On("FindById").Return(product, nil).Once()
-	//mockRepo.On("Update").Return(product, nil).Once()
+	mockProductRepository.EXPECT().FindById("1").Return(expectedProduct, nil).Times(1)
 
-	testService := service.NewProductService(mockRepo)
-
-	result, err := testService.BuyProduct("1", "1000")
-
-	//Mock Assertion: Behavioural
-	mockRepo.AssertExpectations(t)
+	result, err := productService.BuyProduct("1", "1000")
 
 	//data Assertion
 	assert.Nil(t, result)
-	assert.NotNil(t, err)
+	assert.Error(t, err)
+	assert.Equal(t, "Max Quantity exceeded", err.Error())
+}
+
+func TestBuyProductWhenIdNotFound(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
+	productService := service.Service{
+		ProductRepository: mockProductRepository,
+	}
+
+	mockProductRepository.EXPECT().FindById("1").Return(nil, errors.New("record not found")).Times(1)
+
+	result, err := productService.BuyProduct("1", "1000")
+
+	//data Assertion
+	assert.Nil(t, result)
+	assert.Error(t, err)
+	assert.Equal(t, "record not found", err.Error())
 }
 
 func TestBuyProduct(t *testing.T) {
-	mockRepo := new(MockRepository)
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
+	productService := service.Service{
+		ProductRepository: mockProductRepository,
+	}
 
 	//setup expectations
-	product := &entity.Product{
+	expectedProduct := &entity.Product{
 		Model:       gorm.Model{ID: 1},
 		Name:        "N",
 		Description: "D",
@@ -143,30 +155,29 @@ func TestBuyProduct(t *testing.T) {
 		Quantity:    "100",
 	}
 
-	mockRepo.On("FindById").Return(product, nil).Once()
-	mockRepo.On("Update").Return(product, nil).Once()
-
-	testService := service.NewProductService(mockRepo)
-
-	result, err := testService.BuyProduct("1", "10")
-
-	//Mock Assertion: Behavioural
-	mockRepo.AssertExpectations(t)
+	mockProductRepository.EXPECT().FindById("1").Return(expectedProduct, nil).Times(1)
+	mockProductRepository.EXPECT().Update(gomock.Any()).Return(expectedProduct, nil).Times(1)
+	product, err := productService.BuyProduct("1", "10")
 
 	//data Assertion
-	assert.Equal(t, uint(1), result.ID)
-	assert.Equal(t, "N", result.Name)
-	assert.Equal(t, "D", result.Description)
-	assert.Equal(t, "P", result.Price)
-	assert.Equal(t, "90", result.Quantity)
+	assert.Equal(t, expectedProduct.ID, product.ID)
+	assert.Equal(t, expectedProduct.Name, product.Name)
+	assert.Equal(t, expectedProduct.Description, product.Description)
+	assert.Equal(t, expectedProduct.Price, product.Price)
+	assert.Equal(t, expectedProduct.Quantity, product.Quantity)
 	assert.Nil(t, err)
 }
 
 func TestGetTop5Products(t *testing.T) {
-	mockRepo := new(MockRepository)
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
+	productService := service.Service{
+		ProductRepository: mockProductRepository,
+	}
 
 	//setup expectations
-	products := []entity.Product{
+	expectedProducts := []entity.Product{
 		entity.Product{
 			Model:       gorm.Model{ID: 1, UpdatedAt: time.Now()},
 			Name:        "N",
@@ -176,20 +187,33 @@ func TestGetTop5Products(t *testing.T) {
 		},
 	}
 
-	mockRepo.On("FindAll").Return(products, nil).Once()
+	mockProductRepository.EXPECT().FindAll().Return(expectedProducts, nil).Times(1)
 
-	testService := service.NewProductService(mockRepo)
-
-	result, err := testService.GetTop5Products()
-
-	//Mock Assertion: Behavioural
-	mockRepo.AssertExpectations(t)
+	products, err := productService.GetTop5Products()
 
 	//data Assertion
-	assert.Equal(t, uint(1), result[0].ID)
-	assert.Equal(t, "N", result[0].Name)
-	assert.Equal(t, "D", result[0].Description)
-	assert.Equal(t, "P", result[0].Price)
-	assert.Equal(t, "Q", result[0].Quantity)
 	assert.Nil(t, err)
+	assert.Equal(t, expectedProducts[0].ID, products[0].ID)
+	assert.Equal(t, expectedProducts[0].Name, products[0].Name)
+	assert.Equal(t, expectedProducts[0].Description, products[0].Description)
+	assert.Equal(t, expectedProducts[0].Price, products[0].Price)
+	assert.Equal(t, expectedProducts[0].Quantity, products[0].Quantity)
+}
+
+func TestGetTop5ProductsWhenRepoThrowsAnError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
+	productService := service.Service{
+		ProductRepository: mockProductRepository,
+	}
+
+	mockProductRepository.EXPECT().FindAll().Return(nil, errors.New("something went wrong")).Times(1)
+
+	products, err := productService.GetTop5Products()
+
+	//data Assertion
+	assert.Nil(t, products)
+	assert.NotNil(t, err)
+	assert.Equal(t, "something went wrong", err.Error())
 }

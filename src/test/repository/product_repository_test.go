@@ -38,7 +38,9 @@ var product entity.Product = entity.Product{
 
 func TestFindByID(t *testing.T) {
 	db, mock := NewMock()
-	repo := repository.NewProductRepository(db)
+	repo := repository.Repository{
+		DB: db,
+	}
 	query := regexp.QuoteMeta(`SELECT * FROM "products" WHERE "products"."id" = $1 AND "products"."deleted_at" IS NULL ORDER BY "products"."id" LIMIT`)
 
 	rows := sqlmock.NewRows([]string{"id", "name", "description", "price", "quantity"}).
@@ -53,7 +55,9 @@ func TestFindByID(t *testing.T) {
 
 func TestFindAll(t *testing.T) {
 	db, mock := NewMock()
-	repo := repository.NewProductRepository(db)
+	repo := repository.Repository{
+		DB: db,
+	}
 	query := regexp.QuoteMeta(`SELECT * FROM "products" WHERE "products"."deleted_at" IS NULL`)
 
 	rows := sqlmock.NewRows([]string{"id", "name", "description", "price", "quantity"}).
@@ -68,7 +72,9 @@ func TestFindAll(t *testing.T) {
 
 func TestCreate(t *testing.T) {
 	db, mock := NewMock()
-	repo := repository.NewProductRepository(db)
+	repo := repository.Repository{
+		DB: db,
+	}
 	query := regexp.QuoteMeta(`SELECT \* FROM "products" WHERE "products"\."id" = 1 AND "products"\."deleted_at" IS NULL ORDER BY "products"\."id" LIMIT`)
 
 	rows := sqlmock.NewRows([]string{"id", "name", "description", "price", "quantity"}).
@@ -84,7 +90,9 @@ func TestCreate(t *testing.T) {
 
 func TestUpdate(t *testing.T) {
 	db, mock := NewMock()
-	repo := repository.NewProductRepository(db)
+	repo := repository.Repository{
+		DB: db,
+	}
 	query := regexp.QuoteMeta(`SELECT * FROM "products" WHERE "products"."id" = 1 AND "products"."deleted_at" IS NULL ORDER BY "products"."id" LIMIT`)
 
 	rows := sqlmock.NewRows([]string{"id", "name", "description", "price", "quantity"}).

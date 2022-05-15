@@ -4,7 +4,7 @@ import (
 	"github.com/kartikeya/product_catalog_DIY/src/main/entity"
 )
 
-type ProductService interface {
+type ProductServiceInterface interface {
 	AddProducts(products []entity.Product) ([]entity.Product, error)
 	GetProductById(s string) (*entity.Product, error)
 	GetProducts() ([]entity.Product, error)
