@@ -3,8 +3,8 @@ docker run -d -p 5432:5432 --name kartikeya -e POSTGRES_PASSWORD=kartikeya postg
 
 #commands to test the code coverage
 go test ./test/service/product_service_test.go  -v -coverpkg=./main/service    -> 87.0%
-go test ./test/controller/product_controller_test.go -v -coverpkg=./main/controller    ->93.0%
 go test ./test/repository/product_repository_test.go -v -coverpkg=./main/repository    ->62.5%
+go test ./test/controller/product_controller_test.go -v -coverpkg=./main/controller    ->93.0%
 
 Libraries Used : Mux for Routing, Gorm for database Interactions
 
