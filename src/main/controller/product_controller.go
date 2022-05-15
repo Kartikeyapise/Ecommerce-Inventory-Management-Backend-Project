@@ -10,11 +10,11 @@ import (
 	"net/http"
 )
 
-type Controller struct {
+type ProductController struct {
 	ProductService service.ProductServiceInterface
 }
 
-func (c Controller) GetProductById(w http.ResponseWriter, r *http.Request) {
+func (c ProductController) GetProductById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
 	params := mux.Vars(r)
 	product, err := c.ProductService.GetProductById(params["id"])
@@ -26,7 +26,7 @@ func (c Controller) GetProductById(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(product)
 }
 
-func (c Controller) AddProducts(w http.ResponseWriter, r *http.Request) {
+func (c ProductController) AddProducts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
 	var products []entity.Product
 	err := json.NewDecoder(r.Body).Decode(&products)
@@ -44,7 +44,7 @@ func (c Controller) AddProducts(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(view.ResponseMessage{"products added successfully"})
 }
 
-func (c Controller) GetProducts(w http.ResponseWriter, r *http.Request) {
+func (c ProductController) GetProducts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
 	products, err := c.ProductService.GetProducts()
 	if err != nil {
@@ -55,7 +55,7 @@ func (c Controller) GetProducts(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(products)
 }
 
-func (c Controller) BuyProduct(w http.ResponseWriter, r *http.Request) {
+func (c ProductController) BuyProduct(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
 	params := mux.Vars(r)
 	_, err := c.ProductService.BuyProduct(params["id"], params["quantity"])
@@ -67,7 +67,7 @@ func (c Controller) BuyProduct(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(view.ResponseMessage{"Buy Successful"})
 }
 
-func (c Controller) GetTop5Products(w http.ResponseWriter, r *http.Request) {
+func (c ProductController) GetTop5Products(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
 	products, err := c.ProductService.GetTop5Products()
 	if err != nil {

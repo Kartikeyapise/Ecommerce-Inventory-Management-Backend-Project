@@ -17,7 +17,7 @@ func TestGetProductById(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
-	productService := service.Service{
+	productService := service.ProductService{
 		ProductRepository: mockProductRepository,
 	}
 
@@ -48,7 +48,7 @@ func TestGetProductByIdWhenIdNotFound(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
-	productService := service.Service{
+	productService := service.ProductService{
 		ProductRepository: mockProductRepository,
 	}
 
@@ -66,7 +66,7 @@ func TestAddProducts(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
-	productService := service.Service{
+	productService := service.ProductService{
 		ProductRepository: mockProductRepository,
 	}
 
@@ -97,7 +97,7 @@ func TestBuyProductWhenQuantityNotAvailable(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
-	productService := service.Service{
+	productService := service.ProductService{
 		ProductRepository: mockProductRepository,
 	}
 
@@ -124,7 +124,7 @@ func TestBuyProductWhenIdNotFound(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
-	productService := service.Service{
+	productService := service.ProductService{
 		ProductRepository: mockProductRepository,
 	}
 
@@ -142,7 +142,7 @@ func TestBuyProduct(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
-	productService := service.Service{
+	productService := service.ProductService{
 		ProductRepository: mockProductRepository,
 	}
 
@@ -172,7 +172,7 @@ func TestGetTop5Products(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
-	productService := service.Service{
+	productService := service.ProductService{
 		ProductRepository: mockProductRepository,
 	}
 
@@ -204,7 +204,7 @@ func TestGetTop5ProductsWhenRepoThrowsAnError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
-	productService := service.Service{
+	productService := service.ProductService{
 		ProductRepository: mockProductRepository,
 	}
 

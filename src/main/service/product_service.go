@@ -9,23 +9,23 @@ import (
 	"time"
 )
 
-type Service struct {
+type ProductService struct {
 	ProductRepository repository.ProductRepositoryInterface
 }
 
-func (s Service) AddProducts(products []entity.Product) ([]entity.Product, error) {
+func (s ProductService) AddProducts(products []entity.Product) ([]entity.Product, error) {
 	return s.ProductRepository.Create(products)
 }
 
-func (s Service) GetProductById(id string) (*entity.Product, error) {
+func (s ProductService) GetProductById(id string) (*entity.Product, error) {
 	return s.ProductRepository.FindById(id)
 }
 
-func (s Service) GetProducts() ([]entity.Product, error) {
+func (s ProductService) GetProducts() ([]entity.Product, error) {
 	return s.ProductRepository.FindAll()
 }
 
-func (s Service) BuyProduct(id string, quantity string) (*entity.Product, error) {
+func (s ProductService) BuyProduct(id string, quantity string) (*entity.Product, error) {
 	product, err := s.ProductRepository.FindById(id)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (s Service) BuyProduct(id string, quantity string) (*entity.Product, error)
 	return s.ProductRepository.Update(product)
 }
 
-func (s Service) GetTop5Products() ([]entity.Product, error) {
+func (s ProductService) GetTop5Products() ([]entity.Product, error) {
 	products, err := s.ProductRepository.FindAll()
 	if err != nil {
 		return nil, err

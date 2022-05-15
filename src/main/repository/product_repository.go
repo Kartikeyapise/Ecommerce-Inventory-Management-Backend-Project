@@ -6,23 +6,23 @@ import (
 	"strconv"
 )
 
-type Repository struct {
+type ProductRepository struct {
 	DB *gorm.DB
 }
 
-func (r Repository) FindById(id string) (*entity.Product, error) {
+func (r ProductRepository) FindById(id string) (*entity.Product, error) {
 	var product entity.Product
 	err := r.DB.First(&product, id).Error
 	return &product, err
 }
 
-func (r Repository) FindAll() ([]entity.Product, error) {
+func (r ProductRepository) FindAll() ([]entity.Product, error) {
 	var products []entity.Product
 	err := r.DB.Find(&products).Error
 	return products, err
 }
 
-func (r Repository) Create(products []entity.Product) ([]entity.Product, error) {
+func (r ProductRepository) Create(products []entity.Product) ([]entity.Product, error) {
 	for i := 0; i < len(products); i++ {
 		var p entity.Product
 		err := r.DB.Where("name = ?", products[i].Name).First(&p).Error
@@ -43,7 +43,7 @@ func (r Repository) Create(products []entity.Product) ([]entity.Product, error) 
 	return products, nil
 }
 
-func (r Repository) Update(product *entity.Product) (*entity.Product, error) {
+func (r ProductRepository) Update(product *entity.Product) (*entity.Product, error) {
 	err := r.DB.Save(&product).Error
 	return product, err
 }

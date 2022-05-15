@@ -22,7 +22,7 @@ func TestGetProductById(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductService := mocks.NewMockProductService(mockCtrl)
-	productController := controller.Controller{
+	productController := controller.ProductController{
 		ProductService: mockProductService,
 	}
 
@@ -64,7 +64,7 @@ func TestGetProductByIdWhenIdNotAvailable(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductService := mocks.NewMockProductService(mockCtrl)
-	productController := controller.Controller{
+	productController := controller.ProductController{
 		ProductService: mockProductService,
 	}
 
@@ -101,7 +101,7 @@ func TestAddProducts(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductService := mocks.NewMockProductService(mockCtrl)
-	productController := controller.Controller{
+	productController := controller.ProductController{
 		ProductService: mockProductService,
 	}
 	products := []entity.Product{entity.Product{
@@ -159,7 +159,7 @@ func TestAddProductsWhenReqBodyIsNotSuppliedInCorrectFormat(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductService := mocks.NewMockProductService(mockCtrl)
-	productController := controller.Controller{
+	productController := controller.ProductController{
 		ProductService: mockProductService,
 	}
 	//create request body
@@ -195,7 +195,7 @@ func TestAddProductsWhenServiceReturnsAnError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductService := mocks.NewMockProductService(mockCtrl)
-	productController := controller.Controller{
+	productController := controller.ProductController{
 		ProductService: mockProductService,
 	}
 
@@ -240,7 +240,7 @@ func TestGetProducts(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductService := mocks.NewMockProductService(mockCtrl)
-	productController := controller.Controller{
+	productController := controller.ProductController{
 		ProductService: mockProductService,
 	}
 	expectedProducts := []entity.Product{entity.Product{
@@ -286,7 +286,7 @@ func TestGetProductsWhenServiceReturnsAnError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductService := mocks.NewMockProductService(mockCtrl)
-	productController := controller.Controller{
+	productController := controller.ProductController{
 		ProductService: mockProductService,
 	}
 
@@ -321,7 +321,7 @@ func TestBuyProduct(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductService := mocks.NewMockProductService(mockCtrl)
-	productController := controller.Controller{
+	productController := controller.ProductController{
 		ProductService: mockProductService,
 	}
 
@@ -368,7 +368,7 @@ func TestBuyProductWhenQuantityNotEnough(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductService := mocks.NewMockProductService(mockCtrl)
-	productController := controller.Controller{
+	productController := controller.ProductController{
 		ProductService: mockProductService,
 	}
 
@@ -407,7 +407,7 @@ func TestBuyProductWhenCalledWithWrongId(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductService := mocks.NewMockProductService(mockCtrl)
-	productController := controller.Controller{
+	productController := controller.ProductController{
 		ProductService: mockProductService,
 	}
 
@@ -446,7 +446,7 @@ func TestGetTop5Products(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 	mockProductService := mocks.NewMockProductService(mockCtrl)
-	productController := controller.Controller{
+	productController := controller.ProductController{
 		ProductService: mockProductService,
 	}
 

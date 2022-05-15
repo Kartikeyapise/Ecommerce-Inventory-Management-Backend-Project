@@ -12,9 +12,9 @@ import (
 var (
 	httpRouter        router.Router                         = router.NewMuxRouter()
 	DB                *gorm.DB                              = Database.ConnectPostgresDatabase()
-	productRepository repository.ProductRepositoryInterface = &repository.Repository{DB: DB}
-	productService    service.ProductServiceInterface       = &service.Service{ProductRepository: productRepository}
-	productController controller.ProductControllerInterface = &controller.Controller{ProductService: productService}
+	productRepository repository.ProductRepositoryInterface = &repository.ProductRepository{DB: DB}
+	productService    service.ProductServiceInterface       = &service.ProductService{ProductRepository: productRepository}
+	productController controller.ProductControllerInterface = &controller.ProductController{ProductService: productService}
 )
 
 func defineApis() {
