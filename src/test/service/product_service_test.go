@@ -93,6 +93,34 @@ func TestAddProducts(t *testing.T) {
 	assert.Equal(t, expectedProducts[0].Quantity, products[0].Quantity)
 }
 
+func TestAddProductsWhenRepoThrowsAnError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+	mockProductRepository := mocks.NewMockProductRepositoryInterface(mockCtrl)
+	productService := service.ProductService{
+		ProductRepository: mockProductRepository,
+	}
+
+	//setup expectations
+	expectedProducts := []entity.Product{entity.Product{
+		Model:       gorm.Model{ID: 1},
+		Name:        "N",
+		Description: "D",
+		Price:       "P",
+		Quantity:    "Q",
+	},
+	}
+
+	mockProductRepository.EXPECT().Create(gomock.Any()).Return(nil, errors.New("error")).Times(1)
+
+	products, err := productService.AddProducts(expectedProducts)
+
+	//data Assertion
+	assert.Nil(t, products)
+	assert.Equal(t, "error", err.Error())
+
+}
+
 func TestBuyProductWhenQuantityNotAvailable(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
