@@ -4,7 +4,7 @@ docker run -d -p 5432:5432 --name kartikeya -e POSTGRES_PASSWORD=kartikeya postg
 #commands to test the code coverage
 go test ./test/service/product_service_test.go  -v -coverpkg=./main/service    -> 87.0%
 go test ./test/repository/product_repository_test.go -v -coverpkg=./main/repository    ->62.5%
-go test ./test/controller/product_controller_test.go -v -coverpkg=./main/controller    ->93.0%
+go test ./test/controller/*_test.go -v -coverpkg=./main/controller    ->90.09%
 go test ./test/view/response_message_test.go -v -coverpkg=./main/view    -> 100.0%
 go test ./test/entity/product_test.go -v -coverpkg=./main/entity    -> 100.0%
 go test ./test/custum_errors/product_error_test.go -v -coverpkg=./main/custum_errors    -> 100.0%

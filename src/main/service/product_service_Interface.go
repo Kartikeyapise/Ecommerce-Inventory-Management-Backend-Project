@@ -1,13 +1,13 @@
 package service
 
 import (
-	"github.com/kartikeya/product_catalog_DIY/src/main/entity"
+	"github.com/kartikeya/product_catalog_DIY/src/main/model"
 )
 
 type ProductServiceInterface interface {
-	AddProducts(products []entity.Product) ([]entity.Product, error)
-	GetProductById(s string) (*entity.Product, error)
-	GetProducts() ([]entity.Product, error)
-	BuyProduct(id string, quantity string) (*entity.Product, error)
-	GetTop5Products() ([]entity.Product, error)
+	AddProducts(userEmail string, products []model.Product) error
+	GetProductById(s string) (*model.Product, error)
+	GetProducts() ([]model.Product, error)
+	BuyProduct(purchaseInfo model.Sales) (*model.Product, error)
+	GetRecommendedProducts(topNProducts string) ([]model.Product, error)
 }

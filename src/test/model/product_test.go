@@ -1,14 +1,14 @@
-package entity
+package model
 
 import (
-	"github.com/kartikeya/product_catalog_DIY/src/main/entity"
+	"github.com/kartikeya/product_catalog_DIY/src/main/model"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 	"testing"
 )
 
 func TestProduct(t *testing.T) {
-	product := entity.Product{
+	product := model.Product{
 		Model:       gorm.Model{},
 		Name:        "Name",
 		Description: "Description",

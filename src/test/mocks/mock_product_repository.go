@@ -6,8 +6,9 @@ package mocks
 
 import (
 	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
-	entity "github.com/kartikeya/product_catalog_DIY/src/main/entity"
+	model "github.com/kartikeya/product_catalog_DIY/src/main/model"
 )
 
 // MockProductRepositoryInterface is a mock of ProductRepositoryInterface interface.
@@ -34,10 +35,10 @@ func (m *MockProductRepositoryInterface) EXPECT() *MockProductRepositoryInterfac
 }
 
 // Create mocks base method.
-func (m *MockProductRepositoryInterface) Create(arg0 []entity.Product) ([]entity.Product, error) {
+func (m *MockProductRepositoryInterface) Create(arg0 []model.Product) ([]model.Product, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", arg0)
-	ret0, _ := ret[0].([]entity.Product)
+	ret0, _ := ret[0].([]model.Product)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -49,10 +50,10 @@ func (mr *MockProductRepositoryInterfaceMockRecorder) Create(arg0 interface{}) *
 }
 
 // FindAll mocks base method.
-func (m *MockProductRepositoryInterface) FindAll() ([]entity.Product, error) {
+func (m *MockProductRepositoryInterface) FindAll() ([]model.Product, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindAll")
-	ret0, _ := ret[0].([]entity.Product)
+	ret0, _ := ret[0].([]model.Product)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -64,10 +65,10 @@ func (mr *MockProductRepositoryInterfaceMockRecorder) FindAll() *gomock.Call {
 }
 
 // FindById mocks base method.
-func (m *MockProductRepositoryInterface) FindById(arg0 string) (*entity.Product, error) {
+func (m *MockProductRepositoryInterface) FindById(arg0 string) (*model.Product, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindById", arg0)
-	ret0, _ := ret[0].(*entity.Product)
+	ret0, _ := ret[0].(*model.Product)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -79,10 +80,10 @@ func (mr *MockProductRepositoryInterfaceMockRecorder) FindById(arg0 interface{})
 }
 
 // Update mocks base method.
-func (m *MockProductRepositoryInterface) Update(arg0 *entity.Product) (*entity.Product, error) {
+func (m *MockProductRepositoryInterface) Update(arg0 *model.Product) (*model.Product, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", arg0)
-	ret0, _ := ret[0].(*entity.Product)
+	ret0, _ := ret[0].(*model.Product)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

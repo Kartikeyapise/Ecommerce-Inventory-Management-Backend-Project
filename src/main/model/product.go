@@ -1,8 +1,8 @@
-package entity
+package model
 
 import "gorm.io/gorm"
 
-//Product conatains : name, description, price, and quantity
+//Product contains : name, description, price, and quantity
 type Product struct {
 	gorm.Model
 	Name        string `json:"name"`

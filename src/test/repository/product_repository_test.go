@@ -2,7 +2,7 @@ package repository
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/kartikeya/product_catalog_DIY/src/main/entity"
+	"github.com/kartikeya/product_catalog_DIY/src/main/model"
 	"github.com/kartikeya/product_catalog_DIY/src/main/repository"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/postgres"
@@ -28,7 +28,7 @@ func NewMock() (*gorm.DB, sqlmock.Sqlmock) {
 	return gormDb, mock
 }
 
-var product entity.Product = entity.Product{
+var product model.Product = model.Product{
 	Model:       gorm.Model{ID: 1},
 	Name:        "N",
 	Description: "D",
@@ -82,7 +82,7 @@ func TestCreate(t *testing.T) {
 
 	mock.ExpectQuery(query).WillReturnRows(rows)
 
-	p, _ := repo.Create([]entity.Product{product})
+	p, _ := repo.Create([]model.Product{product})
 	assert.Nil(t, p)
 	//TODO - insert correct query in query variable to rectify assert.NoError
 	//assert.NoError(t, err)
